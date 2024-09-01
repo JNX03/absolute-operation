@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import './CheckBoxQuizPage.css';
+import './AnswerBoxQuizPage.css';
 import { FaVolumeUp, FaPause, FaBook, FaGamepad, FaQuestionCircle } from 'react-icons/fa';
 
-function CheckBoxQuizPage() {
+function AnswerBoxQuizPage() {
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentQuestionPlaying, setCurrentQuestionPlaying] = useState(null);
-    const [selectedAnswers, setSelectedAnswers] = useState({});
+    const [answers, setAnswers] = useState({});
     const [isGameDropdownOpen, setIsGameDropdownOpen] = useState(false);
     const [isQuizDropdownOpen, setIsQuizDropdownOpen] = useState(false);
     const [score, setScore] = useState(null);
@@ -14,21 +14,18 @@ function CheckBoxQuizPage() {
     const questions = [
         {
             id: 1,
-            question: "Which of the following are programming languages?",
-            options: ["Python", "HTML", "JavaScript", "CSS"],
-            correctAnswers: ["Python", "JavaScript"],
+            question: "What are the primary colors?",
+            correctAnswers: ["red", "blue", "yellow"],
         },
         {
             id: 2,
-            question: "Which of these are types of databases?",
-            options: ["MongoDB", "React", "MySQL", "Express"],
-            correctAnswers: ["MongoDB", "MySQL"],
+            question: "Name a programming language used for web development.",
+            correctAnswers: ["javascript", "python", "ruby"],
         },
         {
             id: 3,
-            question: "Which of these are JavaScript frameworks?",
-            options: ["Angular", "Django", "Vue", "Flask"],
-            correctAnswers: ["Angular", "Vue"],
+            question: "What is the capital of France?",
+            correctAnswers: ["paris"],
         },
     ];
 
@@ -49,31 +46,20 @@ function CheckBoxQuizPage() {
         setIsPlaying(false);
     };
 
-    const handleAnswerSelection = (questionId, option) => {
+    const handleInputChange = (questionId, value) => {
         if (isSubmitted) return; // Prevent changes after submission
-        setSelectedAnswers((prevState) => {
-            const currentAnswers = prevState[questionId] || [];
-            if (currentAnswers.includes(option)) {
-                return {
-                    ...prevState,
-                    [questionId]: currentAnswers.filter((answer) => answer !== option),
-                };
-            } else {
-                return {
-                    ...prevState,
-                    [questionId]: [...currentAnswers, option],
-                };
-            }
+        setAnswers({
+            ...answers,
+            [questionId]: value.toLowerCase().split(',').map(answer => answer.trim()), // Support multiple answers
         });
     };
 
     const handleSubmit = () => {
         let correctCount = 0;
         questions.forEach((question) => {
-            const selected = selectedAnswers[question.id] || [];
-            const isCorrect = selected.length === question.correctAnswers.length && selected.every((answer) =>
-                question.correctAnswers.includes(answer)
-            );
+            const userAnswers = answers[question.id] || [];
+            const isCorrect = userAnswers.length === question.correctAnswers.length &&
+                userAnswers.every((answer) => question.correctAnswers.includes(answer));
             if (isCorrect) {
                 correctCount++;
             }
@@ -91,7 +77,7 @@ function CheckBoxQuizPage() {
     };
 
     return (
-        <div className="CheckBoxQuizPage">
+        <div className="AnswerBoxQuizPage">
             <header className="top-bar">
                 <img src="/path-to-your-icon/website-icon.png" alt="Website Icon" className="website-icon" />
                 <div className="user-info">
@@ -122,23 +108,17 @@ function CheckBoxQuizPage() {
                             <div className="header-section">
                                 <h2 className="question">{question.question}</h2>
                             </div>
-                            <div className="quiz-options">
-                                {question.options.map((option, index) => (
-                                    <label key={index} className={`quiz-option ${selectedAnswers[question.id]?.includes(option) ? 'selected' : ''}`}>
-                                        <input
-                                            type="checkbox"
-                                            value={option}
-                                            checked={selectedAnswers[question.id]?.includes(option) || false}
-                                            onChange={() => handleAnswerSelection(question.id, option)}
-                                            disabled={isSubmitted} // Disable after submission
-                                        />
-                                        <span className="custom-checkbox"></span>
-                                        {option}
-                                    </label>
-                                ))}
+                            <div className="answer-box">
+                                <input
+                                    type="text"
+                                    placeholder="Type your answers, separated by commas"
+                                    value={answers[question.id]?.join(', ') || ''}
+                                    onChange={(e) => handleInputChange(question.id, e.target.value)}
+                                    disabled={isSubmitted}
+                                />
                             </div>
                             {score !== null && (
-                                <div className={`answer ${selectedAnswers[question.id]?.every((answer) => question.correctAnswers.includes(answer)) ? 'correct' : 'incorrect'}`}>
+                                <div className={`answer ${answers[question.id]?.every((answer) => question.correctAnswers.includes(answer)) ? 'correct' : 'incorrect'}`}>
                                     Correct answers: {question.correctAnswers.join(', ')}
                                 </div>
                             )}
@@ -176,7 +156,7 @@ function CheckBoxQuizPage() {
                             <div className="dropdown">
                                 <button className="dropdown-item">Multiple Choice</button>
                                 <button className="dropdown-item">Check Box</button>
-                                <button className="dropdown-item">Answer</button>
+                                <button className="dropdown-item">Answer Box</button>
                                 <button className="dropdown-item">True-False</button>
                             </div>
                         )}
@@ -187,4 +167,4 @@ function CheckBoxQuizPage() {
     );
 }
 
-export default CheckBoxQuizPage;
+export default AnswerBoxQuizPage;

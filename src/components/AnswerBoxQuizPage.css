@@ -1,4 +1,4 @@
-/* CheckBoxQuizPage.css */
+/* AnswerBoxQuizPage.css */
 
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
@@ -21,7 +21,7 @@ body {
     font-family: 'Roboto', sans-serif;
 }
 
-.CheckBoxQuizPage {
+.AnswerBoxQuizPage {
     height: 100vh;
     width: 100%;
     background-color: var(--background-color);
@@ -148,58 +148,24 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.quiz-options {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
+.answer-box {
     margin-top: 20px;
 }
 
-.quiz-option {
-    background-color: #2a2d3a;
-    border: none;
-    color: var(--text-color);
-    padding: 12px 20px;
+.answer-box input {
+    width: 100%;
+    padding: 10px;
     font-size: 1rem;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    text-align: left;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    position: relative;
+    border-radius: 5px;
+    border: 1px solid var(--accent-color);
+    background-color: #2a2d3a;
+    color: var(--text-color);
+    outline: none;
+    transition: border-color 0.3s;
 }
 
-.quiz-option input[type="checkbox"] {
-    appearance: none;
-    width: 18px;
-    height: 18px;
-    border: 2px solid var(--accent-color);
-    border-radius: 4px;
-    background-color: transparent;
-    cursor: pointer;
-    position: relative;
-}
-
-.quiz-option input[type="checkbox"]:checked {
-    background-color: var(--accent-color);
-    border-color: var(--accent-color);
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%23fff' d='M13.485 2.99L6.507 9.968 2.515 5.976l1.414-1.414 2.578 2.578 5.564-5.564z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: center;
-}
-
-.quiz-option input[type="checkbox"]:disabled {
-    cursor: not-allowed;
-}
-
-.quiz-option:hover {
-    background-color: var(--button-hover-color);
-}
-
-.quiz-option.selected {
-    background-color: var(--selected-color);
+.answer-box input:focus {
+    border-color: var(--button-hover-color);
 }
 
 .answer {

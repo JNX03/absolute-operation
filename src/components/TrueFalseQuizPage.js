@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import './CheckBoxQuizPage.css';
+import './TrueFalseQuizPage.css';
 import { FaVolumeUp, FaPause, FaBook, FaGamepad, FaQuestionCircle } from 'react-icons/fa';
 
-function CheckBoxQuizPage() {
+function TrueFalseQuizPage() {
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentQuestionPlaying, setCurrentQuestionPlaying] = useState(null);
     const [selectedAnswers, setSelectedAnswers] = useState({});
@@ -14,21 +14,18 @@ function CheckBoxQuizPage() {
     const questions = [
         {
             id: 1,
-            question: "Which of the following are programming languages?",
-            options: ["Python", "HTML", "JavaScript", "CSS"],
-            correctAnswers: ["Python", "JavaScript"],
+            question: "The sky is blue.",
+            correctAnswer: "True",
         },
         {
             id: 2,
-            question: "Which of these are types of databases?",
-            options: ["MongoDB", "React", "MySQL", "Express"],
-            correctAnswers: ["MongoDB", "MySQL"],
+            question: "The Earth is flat.",
+            correctAnswer: "False",
         },
         {
             id: 3,
-            question: "Which of these are JavaScript frameworks?",
-            options: ["Angular", "Django", "Vue", "Flask"],
-            correctAnswers: ["Angular", "Vue"],
+            question: "Fish can fly.",
+            correctAnswer: "False",
         },
     ];
 
@@ -49,32 +46,18 @@ function CheckBoxQuizPage() {
         setIsPlaying(false);
     };
 
-    const handleAnswerSelection = (questionId, option) => {
+    const handleAnswerSelection = (questionId, answer) => {
         if (isSubmitted) return; // Prevent changes after submission
-        setSelectedAnswers((prevState) => {
-            const currentAnswers = prevState[questionId] || [];
-            if (currentAnswers.includes(option)) {
-                return {
-                    ...prevState,
-                    [questionId]: currentAnswers.filter((answer) => answer !== option),
-                };
-            } else {
-                return {
-                    ...prevState,
-                    [questionId]: [...currentAnswers, option],
-                };
-            }
+        setSelectedAnswers({
+            ...selectedAnswers,
+            [questionId]: answer,
         });
     };
 
     const handleSubmit = () => {
         let correctCount = 0;
         questions.forEach((question) => {
-            const selected = selectedAnswers[question.id] || [];
-            const isCorrect = selected.length === question.correctAnswers.length && selected.every((answer) =>
-                question.correctAnswers.includes(answer)
-            );
-            if (isCorrect) {
+            if (selectedAnswers[question.id] === question.correctAnswer) {
                 correctCount++;
             }
         });
@@ -91,7 +74,7 @@ function CheckBoxQuizPage() {
     };
 
     return (
-        <div className="CheckBoxQuizPage">
+        <div className="TrueFalseQuizPage">
             <header className="top-bar">
                 <img src="/path-to-your-icon/website-icon.png" alt="Website Icon" className="website-icon" />
                 <div className="user-info">
@@ -123,23 +106,20 @@ function CheckBoxQuizPage() {
                                 <h2 className="question">{question.question}</h2>
                             </div>
                             <div className="quiz-options">
-                                {question.options.map((option, index) => (
-                                    <label key={index} className={`quiz-option ${selectedAnswers[question.id]?.includes(option) ? 'selected' : ''}`}>
-                                        <input
-                                            type="checkbox"
-                                            value={option}
-                                            checked={selectedAnswers[question.id]?.includes(option) || false}
-                                            onChange={() => handleAnswerSelection(question.id, option)}
-                                            disabled={isSubmitted} // Disable after submission
-                                        />
-                                        <span className="custom-checkbox"></span>
+                                {["True", "False"].map((option) => (
+                                    <button
+                                        key={option}
+                                        className={`quiz-option ${selectedAnswers[question.id] === option ? 'selected' : ''}`}
+                                        onClick={() => handleAnswerSelection(question.id, option)}
+                                        disabled={isSubmitted}
+                                    >
                                         {option}
-                                    </label>
+                                    </button>
                                 ))}
                             </div>
                             {score !== null && (
-                                <div className={`answer ${selectedAnswers[question.id]?.every((answer) => question.correctAnswers.includes(answer)) ? 'correct' : 'incorrect'}`}>
-                                    Correct answers: {question.correctAnswers.join(', ')}
+                                <div className={`answer ${selectedAnswers[question.id] === question.correctAnswer ? 'correct' : 'incorrect'}`}>
+                                    Correct answer: {question.correctAnswer}
                                 </div>
                             )}
                         </div>
@@ -176,7 +156,7 @@ function CheckBoxQuizPage() {
                             <div className="dropdown">
                                 <button className="dropdown-item">Multiple Choice</button>
                                 <button className="dropdown-item">Check Box</button>
-                                <button className="dropdown-item">Answer</button>
+                                <button className="dropdown-item">Answer Box</button>
                                 <button className="dropdown-item">True-False</button>
                             </div>
                         )}
@@ -187,4 +167,4 @@ function CheckBoxQuizPage() {
     );
 }
 
-export default CheckBoxQuizPage;
+export default TrueFalseQuizPage;

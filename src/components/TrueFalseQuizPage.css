@@ -1,4 +1,4 @@
-/* CheckBoxQuizPage.css */
+/* TrueFalseQuizPage.css */
 
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
@@ -21,7 +21,7 @@ body {
     font-family: 'Roboto', sans-serif;
 }
 
-.CheckBoxQuizPage {
+.TrueFalseQuizPage {
     height: 100vh;
     width: 100%;
     background-color: var(--background-color);
@@ -164,34 +164,7 @@ body {
     border-radius: 6px;
     cursor: pointer;
     transition: background-color 0.3s;
-    text-align: left;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    position: relative;
-}
-
-.quiz-option input[type="checkbox"] {
-    appearance: none;
-    width: 18px;
-    height: 18px;
-    border: 2px solid var(--accent-color);
-    border-radius: 4px;
-    background-color: transparent;
-    cursor: pointer;
-    position: relative;
-}
-
-.quiz-option input[type="checkbox"]:checked {
-    background-color: var(--accent-color);
-    border-color: var(--accent-color);
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%23fff' d='M13.485 2.99L6.507 9.968 2.515 5.976l1.414-1.414 2.578 2.578 5.564-5.564z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: center;
-}
-
-.quiz-option input[type="checkbox"]:disabled {
-    cursor: not-allowed;
+    text-align: center;
 }
 
 .quiz-option:hover {
