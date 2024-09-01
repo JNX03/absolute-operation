@@ -130,9 +130,17 @@ body {
 }
 
 @keyframes stars {
-    from {transform: translateY(0);}
-    to {transform: translateY(-1000px);}
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-500px); /* Move up halfway */
+    }
+    100% {
+        transform: translateY(0); /* Return to original position */
+    }
 }
+
 
 /* Sections Below Search Bar */
 .sections-container {

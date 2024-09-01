@@ -1,0 +1,101 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{% static 'detail/DetailPage.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="DetailPage">
+        <header class="top-bar">
+            <img src="{% static 'detail/website-icon.png' %}" alt="Website Icon" class="website-icon" />
+            <div class="user-info">
+                <span class="username">User Name</span>
+                <img src="https://www.w3schools.com/w3images/avatar2.png" alt="User Icon" class="user-avatar" />
+            </div>
+        </header>
+        <main class="content-container">
+            <section class="content-left">
+                <div class="header-section">
+                    <h1 class="title">{{ title }}</h1>
+                    <div class="text-to-speech">
+                        <button onclick="handleTextToSpeech('{{ summary }}')" id="play-btn" title="Play" disabled="{{ isPlaying }}">
+                            <i class="fas fa-volume-up"></i>
+                        </button>
+                        <button onclick="handlePause()" id="pause-btn" disabled title="Pause">
+                            <i class="fas fa-pause"></i>
+                        </button>
+                    </div>
+                </div>
+                <p class="summary">{{ summary }}</p>
+                <div class="text-content">
+                    {{ lesson_content|safe }}
+                </div>
+            </section>
+            <aside class="content-right">
+                <div class="title-bar">
+                    <h2 class="section-title">Additional Sections</h2>
+                </div>
+                <div class="side-menu">
+                    <button class="menu-button">
+                        <i class="fas fa-book menu-icon"></i>
+                        Lesson
+                    </button>
+                    <button class="menu-button" onclick="toggleGameDropdown()">
+                        <i class="fas fa-gamepad menu-icon"></i>
+                        Game
+                    </button>
+                    <div id="game-dropdown" class="dropdown" style="display: none;">
+                        <button class="dropdown-item">Matching</button>
+                        <button class="dropdown-item">Flash Card</button>
+                    </div>
+                    <button class="menu-button" onclick="toggleQuizDropdown()">
+                        <i class="fas fa-question-circle menu-icon"></i>
+                        Quiz
+                    </button>
+                    <div id="quiz-dropdown" class="dropdown" style="display: none;">
+                        <a href="{% url 'quiz_page' lesson_id=lesson_id %}" class="dropdown-item">Multiple Choice</a>
+                        <a href="{% url 'quiz_page' lesson_id=lesson_id %}" class="dropdown-item">Check Box</a>
+                        <a href="{% url 'quiz_page' lesson_id=lesson_id %}" class="dropdown-item">Answer</a>
+                        <a href="{% url 'quiz_page' lesson_id=lesson_id %}" class="dropdown-item">True-False</a>
+                    </div>
+                </div>
+            </aside>
+        </main>
+    </div>
+    <script>
+        let isPlaying = false;
+
+        function handleTextToSpeech(text) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            speechSynthesis.speak(utterance);
+            isPlaying = true;
+            document.getElementById('play-btn').disabled = true;
+            document.getElementById('pause-btn').disabled = false;
+        }
+
+        function handlePause() {
+            speechSynthesis.pause();
+            isPlaying = false;
+            document.getElementById('play-btn').disabled = false;
+            document.getElementById('pause-btn').disabled = true;
+        }
+
+        function toggleGameDropdown() {
+            const dropdown = document.getElementById('game-dropdown');
+            dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+            document.getElementById('quiz-dropdown').style.display = 'none';
+        }
+
+        function toggleQuizDropdown() {
+            const dropdown = document.getElementById('quiz-dropdown');
+            dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+            document.getElementById('game-dropdown').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

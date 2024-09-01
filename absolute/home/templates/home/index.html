@@ -1,0 +1,58 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HomePage</title>
+    <link rel="stylesheet" href="{% static 'homepage/homepage.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="HomePage">
+        <div class="top-bar">
+            <img src="{% static 'homepage/website-icon.png' %}" alt="Website Icon" class="website-icon" />
+            <div class="user-info">
+                <span>User Name</span>
+                <img src="https://www.w3schools.com/w3images/avatar2.png" alt="User Icon" />
+            </div>
+        </div>
+
+        <div class="search-container">
+            <form method="get" action="{% url 'create_lesson' %}">
+                <input 
+                    type="text" 
+                    name="search_term" 
+                    class="search-box" 
+                    placeholder="Search anything..." 
+                    required
+                />
+                <button type="submit" class="voice-search">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+        </div>
+
+        <!-- Sections Below the Search Bar -->
+        <div class="sections-container">
+            <div class="section">
+                <h2>Section 1</h2>
+                <p>Content for section 1 goes here.</p>
+            </div>
+            <div class="section">
+                <h2>Section 2</h2>
+                <p>Content for section 2 goes here.</p>
+            </div>
+            <div class="section">
+                <h2>Section 3</h2>
+                <p>Content for section 3 goes here.</p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2024 Absolute-Operation. All rights reserved.</p>
+        </footer>
+    </div>
+</body>
+</html>

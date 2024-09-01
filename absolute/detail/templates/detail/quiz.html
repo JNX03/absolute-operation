@@ -1,0 +1,125 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{% static 'detail/MultiQuizPage.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="MultiQuizPage">
+        <header class="top-bar">
+            <img src="{% static 'detail/website-icon.png' %}" alt="Website Icon" class="website-icon" />
+            <div class="user-info">
+                <span class="username">User Name</span>
+                <img src="https://www.w3schools.com/w3images/avatar2.png" alt="User Icon" class="user-avatar" />
+            </div>
+        </header>
+        <main class="content-container">
+            <section class="content-left">
+                {% for question in quiz_questions %}
+                    <div class="quiz-question">
+                        <div class="text-to-speech">
+                            <button
+                                onclick="handleTextToSpeech({{ question.id }}, '{{ question.question }}')"
+                                id="play-btn-{{ question.id }}"
+                                title="Play Question"
+                            >
+                                <i class="fas fa-volume-up"></i>
+                            </button>
+                            <button
+                                onclick="handlePause({{ question.id }})"
+                                id="pause-btn-{{ question.id }}"
+                                disabled
+                                title="Pause"
+                            >
+                                <i class="fas fa-pause"></i>
+                            </button>
+                        </div>
+                        <div class="header-section">
+                            <h2 class="question">{{ question.question }}</h2>
+                        </div>
+                        <div class="quiz-options">
+                            {% for option in question.options %}
+                                <button
+                                    class="quiz-option"
+                                    onclick="handleAnswerSelection({{ question.id }}, '{{ option }}')"
+                                >
+                                    {{ option }}
+                                </button>
+                            {% endfor %}
+                        </div>
+                        <div class="answer" id="answer-{{ question.id }}"></div>
+                    </div>
+                {% endfor %}
+                <button class="submit-button" onclick="handleSubmit({{ quiz_questions|length }})">Submit</button>
+                <div class="score" id="score"></div>
+            </section>
+            <aside class="content-right">
+                <div class="title-bar">
+                    <h2 class="section-title">Quiz Navigation</h2>
+                </div>
+                <div class="side-menu">
+                    <a href="{% url 'detail_page' lesson_id=lesson_id %}" class="menu-button">
+                        <i class="fas fa-arrow-left menu-icon"></i>
+                        Back to Lesson
+                    </a>
+                </div>
+            </aside>
+        </main>
+    </div>
+    <script>
+        let isPlaying = false;
+        let selectedAnswers = {};
+        let currentQuestionPlaying = null;
+
+        function handleTextToSpeech(questionId, questionText) {
+            const utterance = new SpeechSynthesisUtterance(questionText);
+            utterance.lang = 'en-US';
+            utterance.onend = () => {
+                isPlaying = false;
+                currentQuestionPlaying = null;
+                document.getElementById('play-btn-' + questionId).disabled = false;
+                document.getElementById('pause-btn-' + questionId).disabled = true;
+            };
+            speechSynthesis.speak(utterance);
+            isPlaying = true;
+            currentQuestionPlaying = questionId;
+            document.getElementById('play-btn-' + questionId).disabled = true;
+            document.getElementById('pause-btn-' + questionId).disabled = false;
+        }
+
+        function handlePause(questionId) {
+            speechSynthesis.pause();
+            isPlaying = false;
+            document.getElementById('play-btn-' + questionId).disabled = false;
+            document.getElementById('pause-btn-' + questionId).disabled = true;
+        }
+
+        function handleAnswerSelection(questionId, answer) {
+            selectedAnswers[questionId] = answer;
+            document.querySelectorAll('.quiz-option').forEach(button => button.classList.remove('selected'));
+            document.querySelectorAll(`[onclick="handleAnswerSelection(${questionId}, '${answer}')"]`)[0].classList.add('selected');
+        }
+
+        function handleSubmit(totalQuestions) {
+            let correctCount = 0;
+            for (let i = 1; i <= totalQuestions; i++) {
+                const questionId = i;
+                const correctAnswer = document.getElementById('answer-' + questionId).getAttribute('data-correct-answer');
+                if (selectedAnswers[questionId] === correctAnswer) {
+                    correctCount++;
+                    document.getElementById('answer-' + questionId).innerText = "Correct answer: " + correctAnswer;
+                    document.getElementById('answer-' + questionId).classList.add('correct');
+                } else {
+                    document.getElementById('answer-' + questionId).innerText = "Correct answer: " + correctAnswer;
+                    document.getElementById('answer-' + questionId).classList.add('incorrect');
+                }
+            }
+            document.getElementById('score').innerText = "Your score: " + correctCount + " / " + totalQuestions;
+        }
+    </script>
+</body>
+</html>
