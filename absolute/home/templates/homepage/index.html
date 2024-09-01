@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HomePage</title>
     <link rel="stylesheet" href="{% static 'homepage/homepage.css' %}">
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
     <div class="HomePage">
@@ -16,17 +17,35 @@
                 <img src="https://www.w3schools.com/w3images/avatar2.png" alt="User Icon" />
             </div>
         </div>
-        <div class="search-container">
+
+        <form id="searchForm" method="POST" action="/CreateLesson/" class="search-container">
+            {% csrf_token %}
             <input 
                 type="text" 
+                name="search_term"
                 class="search-box" 
                 placeholder="Search anything..." 
             />
-            <i class="fa fa-search search-icon"></i>
-            <button class="voice-search">
-                <i class="fa fa-microphone"></i>
+            <button type="button" class="search-icon">
+                <i class="fas fa-search"></i>
             </button>
+            <button type="submit" class="voice-search">
+                <i class="fas fa-microphone"></i>
+            </button>
+        </form>
+
+        <!-- Display the response here -->
+        <div class="sections-container">
+            <div class="section">
+                <h2>Response</h2>
+                <p id="response-content">{{ response }}</p>
+            </div>
         </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2024 Absolute-Operation. All rights reserved.</p>
+        </footer>
     </div>
     <script>
         function handleVoiceSearch() {
@@ -37,9 +56,13 @@
             };
             recognition.start();
         }
-    
+
+        // Attach the search button click event to form submission
+        document.querySelector('.search-icon').addEventListener('click', function() {
+            document.getElementById('searchForm').submit();
+        });
+
         document.querySelector('.voice-search').addEventListener('click', handleVoiceSearch);
     </script>
-    
 </body>
 </html>
