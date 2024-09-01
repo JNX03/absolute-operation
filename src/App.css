@@ -1,38 +1,109 @@
+body, html {
+  height: 100%;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #1a1a1a;
+  color: white;
+  overflow: hidden;
+}
+
 .App {
-  text-align: center;
+  height: 100vh;
+  width: 100%;
+  position: relative;
+  background: black;
+  overflow: hidden;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.top-bar {
+  position: absolute;
+  top: 10px;
+  width: 100%;
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
+  padding: 0 20px;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.user-info img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-left: 10px;
+}
+
+.website-icon {
+  width: 50px;
+  height: 50px;
+}
+
+.search-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  width: 80%;
+  max-width: 600px;
+}
+
+.search-box {
+  width: 100%;
+  padding: 15px 60px 15px 20px;
+  border-radius: 25px;
+  border: none;
+  outline: none;
+  background-color: #333;
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.search-box::placeholder {
+  color: #bbb;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.search-icon {
+  position: absolute;
+  right: 75px;
+  font-size: 20px;
+  color: #bbb;
+}
+
+.voice-search {
+  margin-left: 15px;
+  background-color: #333;
+  border: none;
+  color: #bbb;
+  font-size: 20px;
+  padding: 10px;
+  width: 55px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  cursor: pointer;
+  outline: none;
+}
+
+@keyframes stars {
+  from {transform: translateY(0);}
+  to {transform: translateY(-1000px);}
+}
+
+.App::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('https://www.transparenttextures.com/patterns/stardust.png');
+  opacity: 0.5;
+  animation: stars 100s linear infinite;
 }
