@@ -5,7 +5,7 @@ import requests
 from django.conf import settings
 
 def home_page(request):
-    return render(request, 'home/home.html')
+    return render(request, 'home/index.html')
 
 def create_lesson(request):
     search_term = request.GET.get('search_term', '')
@@ -54,7 +54,7 @@ def create_lesson(request):
 
             return redirect(reverse('detail_page', args=[lesson_id]))
 
-    return render(request, 'home/home.html')
+    return render(request, 'home/index.html')
 
 def extract_between_tags(text, tag):
     start_tag = f"[{tag}:"
