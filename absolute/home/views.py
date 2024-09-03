@@ -9,6 +9,7 @@ def home_page(request):
 
 def create_lesson(request):
     search_term = request.GET.get('search_term', '')
+    prompt = settings.OPEN_TYPHOON_PROMPT + f'\n\n[title:{search_term}]'
 
     if search_term:
         headers = {
@@ -20,14 +21,14 @@ def create_lesson(request):
             "messages": [
                 {
                     "role": "system",
-                    "content": "ต่อไปนี้คุณห้ามพูดอะไรนอกจากสิ่งที่ใช้ระบบให้ การบอก คุณจะเป็นครูสอนสิ่งต่างๆ ใช้ [title:{title}] เพื่อบอก title [summary:{summary}] เพื่อบอกย่อๆ [lesson:{lesson}] เพื่อให้ข้อมูลสำหรับสอนสามารถใช้ Tag ของ html ได้ (ต้องมีครบทุกอัน) และ [quiz:{quiz}] เพื่อสร้างคำถามสำหรับเนื้อหานี้"
+                    "content": prompt
                 },
                 {
                     "role": "user",
                     "content": f'โดยคุณต้องสอนเรื่อง {search_term}'
                 }
             ],
-            "max_tokens": 2048,
+            "max_tokens": 4096,
             "temperature": 0.6,
             "top_p": 0.95,
             "repetition_penalty": 1.05,
@@ -36,19 +37,29 @@ def create_lesson(request):
 
         response = requests.post('https://api.opentyphoon.ai/v1/chat/completions', headers=headers, json=data)
 
+        # Print the full response to the console for debugging
+        print("API Response Status Code:", response.status_code)
+        print("API Response Content:", response.content.decode('utf-8'))
+
         if response.status_code == 200:
             result = response.json()['choices'][0]['message']['content']
             title = extract_between_tags(result, "title")
             summary = extract_between_tags(result, "summary")
             lesson_content = extract_between_tags(result, "lesson")
-            quiz_content = extract_between_tags(result, "quiz")
+
+            # Extract multiple quiz and true/false contents
+            quiz_content = extract_all_quiz_questions(result)
+            truefalse_content = extract_all_truefalse_questions(result)
+
+            # Combine quiz and true/false into a single string for storage
+            combined_quiz_content = quiz_content + "\n" + truefalse_content
 
             # Save the lesson and quiz in the database
             lesson = Lesson.objects.create(
                 title=title,
                 summary=summary,
                 content=lesson_content,
-                quiz=quiz_content
+                quiz=combined_quiz_content
             )
             lesson_id = lesson.id
 
@@ -63,18 +74,40 @@ def extract_between_tags(text, tag):
     end = text.find(end_tag, start)
     return text[start:end].strip()
 
-def detail_page(request, lesson_id):
-    lesson = get_object_or_404(Lesson, id=lesson_id)
-    return render(request, 'detail/detail.html', {
-        'title': lesson.title,
-        'summary': lesson.summary,
-        'content': lesson.content,
-        'quiz': lesson.quiz,
-    })
+def extract_all_quiz_questions(text):
+    start_tag = "[quiz:"
+    end_tag = "]"
+    extracted_content = []
+    start = 0
 
-def quiz_page(request, lesson_id):
-    lesson = get_object_or_404(Lesson, id=lesson_id)
-    return render(request, 'detail/quiz.html', {
-        'title': lesson.title,
-        'quiz': lesson.quiz,
-    })
+    while True:
+        start = text.find(start_tag, start)
+        if start == -1:
+            break
+        start += len(start_tag)
+        end = text.find(end_tag, start)
+        if end == -1:
+            break
+        extracted_content.append(f"quiz:{text[start:end].strip()}")
+        start = end + len(end_tag)
+
+    return "\n".join(extracted_content)
+
+def extract_all_truefalse_questions(text):
+    start_tag = "[truefalse:"
+    end_tag = "]"
+    extracted_content = []
+    start = 0
+
+    while True:
+        start = text.find(start_tag, start)
+        if start == -1:
+            break
+        start += len(start_tag)
+        end = text.find(end_tag, start)
+        if end == -1:
+            break
+        extracted_content.append(f"truefalse:{text[start:end].strip()}")
+        start = end + len(end_tag)
+
+    return "\n".join(extracted_content)

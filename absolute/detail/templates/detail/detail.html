@@ -22,10 +22,10 @@
                 <div class="header-section">
                     <h1 class="title">{{ title }}</h1>
                     <div class="text-to-speech">
-                        <button onclick="handleTextToSpeech('{{ summary }}')" id="play-btn" title="Play" disabled="{{ isPlaying }}">
+                        <button onclick="handleTextToSpeech()" id="play-btn" title="Play">
                             <i class="fas fa-volume-up"></i>
                         </button>
-                        <button onclick="handlePause()" id="pause-btn" disabled title="Pause">
+                        <button onclick="handlePause()" id="pause-btn" title="Pause" disabled>
                             <i class="fas fa-pause"></i>
                         </button>
                     </div>
@@ -60,7 +60,7 @@
                         <a href="{% url 'quiz_page' lesson_id=lesson_id %}" class="dropdown-item">Multiple Choice</a>
                         <a href="{% url 'quiz_page' lesson_id=lesson_id %}" class="dropdown-item">Check Box</a>
                         <a href="{% url 'quiz_page' lesson_id=lesson_id %}" class="dropdown-item">Answer</a>
-                        <a href="{% url 'quiz_page' lesson_id=lesson_id %}" class="dropdown-item">True-False</a>
+                        <a href="{% url 'true_false_quiz_page' lesson_id=lesson_id %}" class="dropdown-item">True-False</a>
                     </div>
                 </div>
             </aside>
@@ -68,21 +68,36 @@
     </div>
     <script>
         let isPlaying = false;
+        let utterance;
 
-        function handleTextToSpeech(text) {
-            const utterance = new SpeechSynthesisUtterance(text);
+        function handleTextToSpeech() {
+            const contentElement = document.querySelector('.content-left');
+            const text = contentElement.innerText || contentElement.textContent;
+            utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'en-US';
+
+            utterance.onstart = function() {
+                isPlaying = true;
+                document.getElementById('play-btn').disabled = true;
+                document.getElementById('pause-btn').disabled = false;
+            };
+
+            utterance.onend = function() {
+                isPlaying = false;
+                document.getElementById('play-btn').disabled = false;
+                document.getElementById('pause-btn').disabled = true;
+            };
+
             speechSynthesis.speak(utterance);
-            isPlaying = true;
-            document.getElementById('play-btn').disabled = true;
-            document.getElementById('pause-btn').disabled = false;
         }
 
         function handlePause() {
-            speechSynthesis.pause();
-            isPlaying = false;
-            document.getElementById('play-btn').disabled = false;
-            document.getElementById('pause-btn').disabled = true;
+            if (isPlaying) {
+                speechSynthesis.cancel(); // Stops the current speech
+                isPlaying = false;
+                document.getElementById('play-btn').disabled = false;
+                document.getElementById('pause-btn').disabled = true;
+            }
         }
 
         function toggleGameDropdown() {

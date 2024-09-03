@@ -5,11 +5,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title }}</title>
-    <link rel="stylesheet" href="{% static 'detail/MultiQuizPage.css' %}">
+    <link rel="stylesheet" href="{% static 'detail/TrueFalseQuizPage.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .quiz-option.selected {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        .correct {
+            color: green;
+        }
+        .incorrect {
+            color: red;
+        }
+    </style>
 </head>
 <body>
-    <div class="MultiQuizPage">
+    <div class="TrueFalseQuizPage">
         <header class="top-bar">
             <img src="{% static 'detail/website-icon.png' %}" alt="Website Icon" class="website-icon" />
             <div class="user-info">
@@ -19,8 +32,8 @@
         </header>
         <main class="content-container">
             <section class="content-left">
-                {% for question in quiz_questions %}
-                    <div class="quiz-question" id="question-{{ question.id }}">
+                {% for question in questions %}
+                    <div class="quiz-question">
                         <div class="text-to-speech">
                             <button
                                 onclick="handleTextToSpeech({{ question.id }}, '{{ question.question|escapejs }}')"
@@ -41,20 +54,30 @@
                         <div class="header-section">
                             <h2 class="question">{{ question.question }}</h2>
                         </div>
+                        
+                        {% if question.type == "multiple-choice" %}
                         <div class="quiz-options">
                             {% for option in question.options %}
                                 <button class="quiz-option" onclick="handleAnswerSelection({{ question.id }}, '{{ option }}', this)">{{ option }}</button>
                             {% endfor %}
                         </div>
+                        {% elif question.type == "true-false" %}
+                        <div class="quiz-options">
+                            <button class="quiz-option" onclick="handleAnswerSelection({{ question.id }}, 'True', this)">True</button>
+                            <button class="quiz-option" onclick="handleAnswerSelection({{ question.id }}, 'False', this)">False</button>
+                        </div>
+                        {% endif %}
+                        
                         <div class="answer" id="answer-{{ question.id }}" data-correct-answer="{{ question.correct_answer }}"></div>
                     </div>
                 {% endfor %}
-                <button class="submit-button" onclick="handleSubmit({{ quiz_questions|length }})">Submit</button>
+                
+                <button class="submit-button" onclick="handleSubmit({{ questions|length }})">Submit</button>
                 <div class="score" id="score"></div>
             </section>
             <aside class="content-right">
                 <div class="title-bar">
-                    <h2 class="section-title">Additional Sections</h2>
+                    <h2 class="section-title">Quiz Navigation</h2>
                 </div>
                 <div class="side-menu">
                     <button class="menu-button">
@@ -75,8 +98,6 @@
                     </button>
                     <div id="quiz-dropdown" class="dropdown" style="display: none;">
                         <a href="{% url 'quiz_page' lesson_id=lesson_id %}" class="dropdown-item">Multiple Choice</a>
-                        <a href="{% url 'quiz_page' lesson_id=lesson_id %}" class="dropdown-item">Check Box</a>
-                        <a href="{% url 'quiz_page' lesson_id=lesson_id %}" class="dropdown-item">Answer</a>
                         <a href="{% url 'true_false_quiz_page' lesson_id=lesson_id %}" class="dropdown-item">True-False</a>
                     </div>
                 </div>
@@ -85,6 +106,7 @@
     </div>
     <script>
         let selectedAnswers = {};
+        let isSubmitted = false;
 
         function handleTextToSpeech(questionId, questionText) {
             const utterance = new SpeechSynthesisUtterance(questionText);
@@ -105,6 +127,7 @@
         }
 
         function handleAnswerSelection(questionId, answer, button) {
+            if (isSubmitted) return; // Prevent changes after submission
             selectedAnswers[questionId] = answer;
             // Deselect all options for this question
             document.querySelectorAll(`#question-${questionId} .quiz-option`).forEach(btn => btn.classList.remove('selected'));
@@ -126,16 +149,19 @@
                 }
             }
             document.getElementById('score').innerText = "Your score: " + correctCount + " / " + totalQuestions;
-        }
-
-        function toggleQuizDropdown() {
-            const dropdown = document.getElementById('quiz-dropdown');
-            dropdown.style.display = (dropdown.style.display === 'none' || dropdown.style.display === '') ? 'block' : 'none';
+            isSubmitted = true;
         }
 
         function toggleGameDropdown() {
             const dropdown = document.getElementById('game-dropdown');
-            dropdown.style.display = (dropdown.style.display === 'none' || dropdown.style.display === '') ? 'block' : 'none';
+            dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+            document.getElementById('quiz-dropdown').style.display = 'none';
+        }
+
+        function toggleQuizDropdown() {
+            const dropdown = document.getElementById('quiz-dropdown');
+            dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+            document.getElementById('game-dropdown').style.display = 'none';
         }
     </script>
 </body>

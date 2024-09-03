@@ -1,10 +1,10 @@
 from django.db import models
 
 class Lesson(models.Model):
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=200)
     summary = models.TextField()
-    lesson_content = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
+    content = models.TextField()
+    quiz = models.TextField()  # Assuming quiz data is stored as text (could be JSON string)
 
     def __str__(self):
         return self.title
